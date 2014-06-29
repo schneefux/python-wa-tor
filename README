@@ -1,0 +1,27 @@
+usage: wator.py [-h] [-w WIDTH] [-v HEIGHT] [-f FISHCOLOR] [-s SHARKCOLOR]
+                [-b FISHBREED] [-c SHARKBREED] [-e SHARKENERGY]
+                [-g FOODENERGY] [-z ZOOM]
+
+Wa-Tor Implementation
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -w WIDTH, --width WIDTH
+                        Width of the world
+  -v HEIGHT, --height HEIGHT
+                        Height of the world
+  -f FISHCOLOR, --fishcolor FISHCOLOR
+                        Color of the fish
+  -s SHARKCOLOR, --sharkcolor SHARKCOLOR
+                        Color of the shark
+  -b FISHBREED, --fishbreed FISHBREED
+                        Number of rounds that the fish need to breed
+  -c SHARKBREED, --sharkbreed SHARKBREED
+                        Number of rounds that the sharks need to breed
+  -e SHARKENERGY, --sharkenergy SHARKENERGY
+                        Number of energy points the sharks get at the
+                        beginning
+  -g FOODENERGY, --foodenergy FOODENERGY
+                        Number of energy points a shark earns when it eats a
+                        fish
+  -z ZOOM, --zoom ZOOM  Zoomimg factor
