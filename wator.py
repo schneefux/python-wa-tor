@@ -1,8 +1,4 @@
-#!/usr/bin/python
-
-#
-#    Written by Casimo
-#    6th October 2013
+#!/usr/bin/python3
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -29,7 +25,7 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-EMPTY = 0 
+EMPTY = 0
 FISH = 1
 SHARK = 2
 
@@ -42,6 +38,7 @@ DIR_LEFT = 3
 random.seed()
 pygame.init()
 
+
 # Small function to generate an empty map
 def clearmap(maprect):
     worldmap = []
@@ -50,10 +47,11 @@ def clearmap(maprect):
         for i in range(maprect[1]):
             worldmap[j].append(0)
     return worldmap
-    
-#--------------------------------------------
+
+
+# -------------------------------------------
 # Creature class
-#--------------------------------------------
+# -------------------------------------------
 # The creature is a subclass of fish and sharks
 # it includes definitions on how to move, draw and grow
 class Creature(object):
@@ -81,7 +79,8 @@ class Creature(object):
 
     # Draw a rectangle on the surface in the creature's color
     def draw(self, surface, zoom):
-        pygame.draw.rect(surface, self.color, (self.x * zoom, self.y * zoom, zoom, zoom))
+        pygame.draw.rect(surface, self.color,
+                         (self.x * zoom, self.y * zoom, zoom, zoom))
 
     # returns the position after moving in direction
     def getpos(self, direction):
@@ -98,7 +97,7 @@ class Creature(object):
             newx = self.x - 1
             newy = self.y
 
-        # if the creature goes to the top/bottom/left/right, move it to the other edge
+        # if the creature goes to top/bottom/left/right, move to other edge
         if newx == -1:
             newx = self.width - 1
         elif newx == self.width:
@@ -111,7 +110,8 @@ class Creature(object):
 
         return (newx, newy)
 
-    # moves the creature to the new position and returns (in case of the shark) whether it has eaten a fish
+    # moves the creature to the new position and returns (in case of the shark)
+    # whether it has eaten a fish
     def swim(self, worldmap, direction):
         newpos = self.getpos(direction)
 
@@ -122,7 +122,7 @@ class Creature(object):
         worldmap[self.x][self.y] = EMPTY
         self.x = newpos[0]
         self.y = newpos[1]
-    
+
         return oldfield
 
     # returns the creature at the position of the field in direction
@@ -140,16 +140,13 @@ class Creature(object):
         else:
             return False
 
-#-----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
 # Fish class
-#-----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # The fish class is part of the world
 # it defines the corpus' definitions for a fish
 class Fish(Creature):
-    # init the corpus with the given values
-    #def __init__(self, width, height, color, breedtime):
-        #self.corpus = Creature(FISH, color, breedtime, width, height)
-
     # swim checks for empty fields
     def swim(self, worldmap):
         # get a list of all empty fields
@@ -157,7 +154,7 @@ class Fish(Creature):
         for j in range(4):
             if super(Fish, self).check(worldmap, j) == EMPTY:
                 normdir.append(j)
-        
+
         # and choose a random direction
         if len(normdir) == 0:
             # the fish cannot move
@@ -170,12 +167,14 @@ class Fish(Creature):
 
     # check if the fish was eaten by a shark
     def checkeaten(self, worldmap):
-        # in this case there is 'SHARK' instead of 'FISH' at the fish's position in the map
+        # in this case there is 'SHARK' instead of 'FISH'
+        # at the fish's position in the map
         return worldmap[self.x][self.y] == SHARK
 
-#------------------------------------------------------------------
+
+# -----------------------------------------------------------------
 # Shark class
-#------------------------------------------------------------------
+# -----------------------------------------------------------------
 # The shark class is part of the world
 # it defines the corpus' definitions for a shark
 class Shark(object):
@@ -186,10 +185,10 @@ class Shark(object):
 
     def locate(self, worldmap, pos):
         return self.corpus.locate(worldmap, pos)
-        
+
     def draw(self, surface, zoom):
         self.corpus.draw(surface, zoom)
-    
+
     # swim to a fish or an empty field
     def swim(self, worldmap):
         # make a list of fields with fish
@@ -201,7 +200,7 @@ class Shark(object):
                 fishdir.append(j)
             elif self.corpus.check(worldmap, j) == EMPTY:
                 normdir.append(j)
-        
+
         # if there are fish around, get a random one
         if len(fishdir) != 0:
             direction = random.choice(fishdir)
@@ -226,21 +225,23 @@ class Shark(object):
             # RIP
             return -1
         return canbreed
-        
-#-------------------------------------------
+
+
+# ------------------------------------------
 # World class
-#-------------------------------------------
+# ------------------------------------------
 # The world class includes all fish and sharks
 # it defines the environment
 class World(object):
-    def __init__(self, worldrect, fishcolor, sharkcolor, backgroundcolor, fishbreed, sharkbreed, sharkenergy, foodenergy, zoom):
+    def __init__(self, worldrect, fishcolor, sharkcolor, backgroundcolor,
+                 fishbreed, sharkbreed, sharkenergy, foodenergy, zoom):
         self.width = worldrect[0]
         self.height = worldrect[1]
         self.zoom = zoom
-        
+
         self.fishcolor = fishcolor
         self.sharkcolor = sharkcolor
-	self.backgroundcolor = backgroundcolor
+        self.backgroundcolor = backgroundcolor
 
         self.fishbreed = fishbreed
         self.sharkbreed = sharkbreed
@@ -254,25 +255,32 @@ class World(object):
         # get a random number of fish and sharks
         numfish = random.randint(1, self.width * self.height / 2)
         numsharks = random.randint(1, self.width * self.height / 2)
-        
+
         # create an empty map
         self.world = clearmap(worldrect)
 
         for j in range(numfish):
             # bear a fish
-            newfish = Fish(race = FISH, color = self.fishcolor, breedtime = self.fishbreed, width = self.width, height = self.height)
+            newfish = Fish(race=FISH, color=self.fishcolor,
+                           breedtime=self.fishbreed,
+                           width=self.width, height=self.height)
 
             # and locate it on the map
-            pos = (random.randint(0, self.width - 1), random.randint(0, self.height - 1))
+            pos = (random.randint(0, self.width - 1),
+                   random.randint(0, self.height - 1))
             if newfish.locate(self.world, pos) == True:
                 self.fish.append(newfish)
 
         for j in range(numsharks):
             # bear a shark
-            newshark = Shark(color = self.sharkcolor, energy = self.sharkenergy, foodenergy = self.foodenergy, breedtime = self.sharkbreed, width = self.width, height = self.height)
+            newshark = Shark(color=self.sharkcolor, energy=self.sharkenergy,
+                             foodenergy=self.foodenergy,
+                             breedtime=self.sharkbreed,
+                             width=self.width, height=self.height)
 
             # locate it on the map
-            pos = (random.randint(0, self.width - 1), random.randint(0, self.height - 1))
+            pos = (random.randint(0, self.width - 1),
+                   random.randint(0, self.height - 1))
             if newshark.locate(self.world, pos) == True:
                 self.sharks.append(newshark)
 
@@ -290,7 +298,9 @@ class World(object):
                 else:
                     color = self.sharkcolor
 
-                pygame.draw.rect(surface, color, (j * self.zoom, k * self.zoom, self.zoom, self.zoom))
+                pygame.draw.rect(surface, color,
+                                 (j * self.zoom, k * self.zoom,
+                                  self.zoom, self.zoom))
 
     # play another round
     def update(self):
@@ -306,8 +316,10 @@ class World(object):
             else:
                 if fish.grow() == True:
                     # a new fish is born
-                    newfish = Fish(race = FISH, color = self.fishcolor, breedtime = self.fishbreed, width = self.width, height = self.height)
-                    
+                    newfish = Fish(race=FISH, color=self.fishcolor,
+                                   breedtime=self.fishbreed, width=self.width,
+                                   height=self.height)
+
                     pos = (fish.x, fish.y)
                     if fish.swim(self.world) == True:
                         # move the old fish
@@ -317,20 +329,25 @@ class World(object):
                 else:
                     # fish is not old enough -> just swim away
                     fish.swim(self.world)
-        
+
         # add new fish to the fishlist
         self.fish.extend(allnewfish)
-    
+
         for shark in self.sharks:
             state = shark.grow()
             if state == -1:
                 # the shark doesn't have enough energy
                 self.sharks.remove(shark)
                 self.world[shark.corpus.x][shark.corpus.y] = EMPTY
-            elif state == True:
+            elif state:
                 # a new shark has to be born
-                newshark = Shark(color = self.sharkcolor, energy = self.sharkenergy, foodenergy = self.foodenergy, breedtime = self.sharkbreed, width = self.width, height = self.height)
-            
+                newshark = Shark(color=self.sharkcolor,
+                                 energy=self.sharkenergy,
+                                 foodenergy=self.foodenergy,
+                                 breedtime=self.sharkbreed,
+                                 width=self.width,
+                                 height=self.height)
+
                 pos = (shark.corpus.x, shark.corpus.y)
                 if shark.swim(self.world) == True:
                     # swim away, old fish
@@ -343,28 +360,47 @@ class World(object):
         # add new sharks
         self.sharks.extend(allnewsharks)
 
+
 def parse_arguments():
     # Parse arguments
-    parser = argparse.ArgumentParser(description = "Wa-Tor Implementation")
-    parser.add_argument('-w', '--width', help = "Width of the world", default = 100, type = int)
-    parser.add_argument('-v', '--height', help = "Height of the world", default = 50, type = int)
-    parser.add_argument('-f', '--fishcolor', help = "Color of the fish", default = 'blue', type = str)
-    parser.add_argument('-s', '--sharkcolor', help = "Color of the shark", default = 'green', type = str)
-    parser.add_argument('-a', '--backgroundcolor', help = "Background color", default = 'black', type = str)
-    parser.add_argument('-b', '--fishbreed', help = "Number of rounds that the fish need to breed", default = 4, type = int)
-    parser.add_argument('-c', '--sharkbreed', help = "Number of rounds that the sharks need to breed", default = 5, type = int)
-    parser.add_argument('-e', '--sharkenergy', help = "Number of energy points the sharks get at the beginning", default = 3, type = int)
-    parser.add_argument('-g', '--foodenergy', help = "Number of energy points a shark earns when it eats a fish", default = 1, type = int)
-    parser.add_argument('-z', '--zoom', help = "Zoomimg factor", default = 10, type = int)
+    parser = argparse.ArgumentParser(description="Wa-Tor Implementation")
+    parser.add_argument('-w', '--width', help="Width of the world",
+                        default=100, type=int)
+    parser.add_argument('-v', '--height', help="Height of the world",
+                        default=50, type=int)
+    parser.add_argument('-f', '--fishcolor', help="Color of the fish",
+                        default='blue', type=str)
+    parser.add_argument('-s', '--sharkcolor', help="Color of the shark",
+                        default='green', type=str)
+    parser.add_argument('-a', '--backgroundcolor', help="Background color",
+                        default='black', type=str)
+    parser.add_argument('-b', '--fishbreed',
+                        help="Number of rounds that the fish need to breed",
+                        default=4, type=int)
+    parser.add_argument('-c', '--sharkbreed',
+                        help="Number of rounds that the sharks need to breed",
+                        default=5, type=int)
+    parser.add_argument('-e', '--sharkenergy',
+                        help="Number of energy points the sharks get at the " +
+                        "beginning",
+                        default=3, type=int)
+    parser.add_argument('-g', '--foodenergy',
+                        help="Number of energy points a shark earns when it " +
+                        "eats a fish",
+                        default=1, type=int)
+    parser.add_argument('-z', '--zoom', help="Zoomimg factor", default=10,
+                        type=int)
     args = parser.parse_args()
     return args
+
 
 def game_loop(args):
     # Check arguments
     if args.zoom < 1 or args.zoom > 100:
         print("Error: --zoom invalid")
         exit(0)
-    if args.width < 0 or args.width > 1000 or args.height < 0 or args.height > 1000:
+    if args.width < 0 or args.width > 1000 \
+            or args.height < 0 or args.height > 1000:
         print("Error: --world invalid")
         exit(0)
     if args.fishbreed < 1 or args.fishbreed > 1000:
@@ -381,8 +417,16 @@ def game_loop(args):
         exit(0)
 
     # init the world
-    world = World((args.width, args.height), fishcolor = Color(args.fishcolor), sharkcolor = Color(args.sharkcolor), backgroundcolor = Color(args.backgroundcolor), fishbreed = args.fishbreed, sharkbreed = args.sharkbreed, sharkenergy = args.sharkenergy, foodenergy = args.foodenergy, zoom = args.zoom)
-    
+    world = World((args.width, args.height),
+                  fishcolor=Color(args.fishcolor),
+                  sharkcolor=Color(args.sharkcolor),
+                  backgroundcolor=Color(args.backgroundcolor),
+                  fishbreed=args.fishbreed,
+                  sharkbreed=args.sharkbreed,
+                  sharkenergy=args.sharkenergy,
+                  foodenergy=args.foodenergy,
+                  zoom=args.zoom)
+
     # init the window
     windowsize = (args.width * args.zoom, args.height * args.zoom)
     display = pygame.display.set_mode(windowsize)
@@ -390,7 +434,7 @@ def game_loop(args):
 
     loop = True
     # main loop
-    while loop == True:
+    while loop:
         world.update()
         world.draw(display)
         pygame.display.update()
